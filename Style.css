@@ -1,0 +1,82 @@
+@font-face
+{
+    font-family: HelConBold;
+    src: url(HelConBold.otf);
+}
+
+body
+{
+    background-color: lightblue;
+    font-family: HelConBold;
+}
+
+button
+{
+    font-family: HelConBold;
+    text-transform: uppercase;
+    background-color: Transparent;
+    outline: none;
+    border: none;
+}
+
+.move
+{
+    font-size: 4vh;
+}
+
+.teamname
+{
+    font-size: 25px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.teamlv
+{
+    font-size: 25px;
+}
+
+.teamhealth
+{
+    background-color: yellowgreen;
+    border-radius: 10px;
+}
+
+.teaminf
+{
+    background-color: aliceblue;
+    border: 2px solid black;
+    border-radius: 30px;
+    box-shadow: 15px 21px 5px 0px rgba(0,0,0,0.35);
+}
+
+.hptext
+{
+    text-transform: uppercase;
+    font-size: 20px;
+}
+
+.hpbar
+{
+    border-radius: 10px;
+}
+
+
+
+#infocont
+{
+    font-size: 4vh;
+    border: 6px solid rgb(91, 49, 110);
+    border-radius: 10px;
+}
+
+#actions
+{
+    border-radius: 20px;
+}
+
+#buttoncont
+{
+    border: 6px solid rgb(91, 49, 110);
+    border-radius: 10px;
+}

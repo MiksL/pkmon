@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+
+    <body>
+        <link href="css.css" rel="stylesheet" type="text/css">
+
+        <div id="container">
+            <div id="display">
+                <div id="team1" class="team">
+
+                    <div id="team1inf" class="teaminf">
+                        <div id="team1name" class="teamname">GTX2080Ti</div>
+
+                        <div id="team1lv" class="teamlv">Lv83</div>
+
+                        <div class="progress">
+                            <div class="teamhealth" id="team1hp">
+                                <div id="team1hpbar" class="hpbar">293/293</div>
+                            </div>
+                            <div class="hptext">HP</div>
+                        </div>
+                    </div>
+
+                    <img id="t1img">
+                </div>
+
+                <div id="team2" class="team">
+
+                    <img id="t2img">
+
+                    <div id="team2inf" class="teaminf">
+                        <div id="team2name" class="teamname">Epic</div>
+                        <div id="team2lv" class="teamlv">Lv543</div>
+                        <div class="progress">
+                            <div class="teamhealth" id="team2hp">
+                              <div id="team2hpbar" class="hpbar">53/53</div>  
+                            </div>
+                            <div class="hptext">HP</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="actions">
+                <div id="infocont">
+                    <div class="info" id="pp">
+                        PP 12313/12
+                    </div>
+                    <div class="info" id="movetype">
+                        EPIC
+                    </div>
+                </div>
+
+                <div id="buttoncont">
+                    <button type="button" id="button1" class="move" onmouseover="hover(bt1)" onmouseout="unhover(bt1)" onclick="gotomoves(); hover(bt1)"> ATAKC</button>
+                    <button type="button" id="button2" class="move" onmouseover="hover(bt2)" onmouseout="unhover(bt2)"> BEG</button>
+                    <button type="button" id="button3" class="move" onmouseover="hover(bt3)" onmouseout="unhover(bt3)"> YES</button>
+                    <button type="button" id="button4" class="move" onmouseover="hover(bt4)" onmouseout="unhover(bt4)"> RAN</button>
+                </div>
+            </div>
+
+        </div>
+
+        
+        <script src="js.js"></script>
+    </body>
+</html>
