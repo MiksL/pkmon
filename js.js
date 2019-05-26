@@ -1,4 +1,4 @@
-
+// #region Variables
 const t1n = document.getElementById("team1name");
 const t1lv = document.getElementById("team1lv");
 const t1hpbar = document.getElementById("team1hpbar");
@@ -22,12 +22,14 @@ var btname;
 var wsbtname;
 var charsel;
 var imglt1;
+var attackcomplete;
 
 
 var team1pkmon = "";
 var team2pkmon = "";
+// #endregion
 
-
+// #region ObjectTemplates
 function pakiman(name,lvl,hp,att,sp,def,spatt,spdef,move1,move2,move3,move4,imglink)
 {
     this.name = name;
@@ -56,8 +58,11 @@ function move(name,dmg,pp,type,issp,sp,cooldown)
     this.issp = issp;
     this.sp = sp;
     this.cooldown = cooldown;
+    this.currentcooldown = 0;
 }
+// #endregion
 
+// #region Objects
 var mRTX = new move('RAY TRACING',100,5,'RTX',true,30,2);
 var mOC = new move('OC',40,10,'normal',false,50,0);
 var mNVENC = new move('NVENC',20,25,'normal',false,200,1);
@@ -67,11 +72,13 @@ var mHeatwave = new move('HEATWAVE',40,10,'fire',false,40,0);
 var mLN2 = new move('LN2',60,5,'air',true,120,1);
 var mHBM2 = new move('HBM2',40,3,'electric',true,1000,2);
 
-var RTX2080Ti = new pakiman('RTX2080Ti',68,272,34,12,50,80,12,mRTX,mOC,mNVENC,mDRIVERUPDATE,'pakimans/epic.png');
-var RadeonVII = new pakiman('RadeonVII',50,331,20,7,69,60,16,mHeatwave,mLN2,mOC,mHBM2,'pakimans/epic2.png');
+var RTX2080Ti = new pakiman('RTX2080Ti',68,272,68,70,50,80,50,mRTX,mOC,mNVENC,mDRIVERUPDATE,'pakimans/epic.png');
+var RadeonVII = new pakiman('RadeonVII',50,331,40,50,69,60,65,mHeatwave,mLN2,mOC,mHBM2,'pakimans/epic2.png');
+//#endregion
 
-var pakimani = [RTX2080Ti];
+var pakimani = [RTX2080Ti,RadeonVII];
 
+// #region HoverFunctions
 function hover(bt)
 {
     btname = bt.innerHTML;
@@ -82,15 +89,16 @@ function hover(bt)
 
 function movehover(bt,move)
 {
-    btname = bt.innerHTML;
-    btname = btname.replace(/\s/,'');
-    btname.trimLeft();
-    bt.innerHTML = '►' + btname;
+    hover(bt);
 
+    updatepp(move);
+}
+
+function updatepp(move)
+{
     var remainingpp = team1pkmon[move].rempp;
     var totalpp = team1pkmon[move].pp;
     pp.innerHTML = "PP " + remainingpp + "/" + totalpp;
-    /* TODO MAKE ALL BUTTONS WORK. ONLY 3 AND 4 WORK */
 }
 
 function unhover(bt)
@@ -98,43 +106,47 @@ function unhover(bt)
     bt.innerHTML.replace("►","");
     bt.innerHTML = ' ' + btname;
 }
+// #endregion
 
 
+// #region Init team1char & team2character (TODO - REMOVE T2IMG SRC)
 t1pkmn();
-
 function t1pkmn()
 {
     charsel = Math.floor(Math.random() * 1);
-
+    
+    team1pkmon = pakimani[0];
     t1n.innerHTML = pakimani[0].name;
     t1lv.innerHTML = "Lv" + pakimani[0].lvl;
     t1hpbar.innerHTML = pakimani[0].hp + "/" + pakimani[0].hp;
     t1img.src = pakimani[0].imglink;
 
-    team1pkmon = pakimani[0];
-
-
-    t2img.src = 'pakimans/epic2.png';
-
-
+    team2pkmon = pakimani[1];
+    t2n.innerHTML = pakimani[1].name;
+    t2lv.innerHTML = "Lv" + pakimani[1].lvl;
+    t2hpbar.innerHTML = pakimani[1].hp + "/" + pakimani[1].hp;
+    t2img.src = pakimani[1].imglink;
 }
+// #endregion
 
-function attack(move) /* TODO - FINISH */
+function attack(move) /* TODO - FINISH COOLDOWNS*/
 {
-    console.log(team1pkmon);
-    console.log(team1pkmon[move].pp);
+    console.log("Current cooldown: " + team1pkmon[move].currentcooldown);
     if(team1pkmon[move].rempp > 0)
     {
-        team1pkmon[move].rempp--;
 
-        if(team1pkmon[move].cooldown > 0)
+        if(team1pkmon[move].currentcooldown > 0)
         {
             alert("This attack is on a cooldown!");
+            return;
         }
         else
         {
-            alert("Move's working!")
+            dealdamage(move);
+            team1pkmon[move].currentcooldown = team1pkmon[move].cooldown + 1;
+            team1pkmon[move].rempp--;
         }
+        team1pkmon[move].currentcooldown--;
     }
     else if(team1pkmon[move].rempp == 0)
     {
@@ -144,6 +156,37 @@ function attack(move) /* TODO - FINISH */
     {
         alert("Some PP error");
     }
+
+    updatepp(move);
+}
+
+function dealdamage(move)
+{
+    var damage = team1pkmon[move].dmg;
+    if(team1pkmon[move].issp == false)
+    {
+        damage = damage * ((1 + team1pkmon.att * 0.01) - (team2pkmon.def * 0.005));
+        console.log("Not special dmg -" + damage);
+    }
+    else
+    {
+        damage = damage * ((1 + team1pkmon.spatt * 0.015) - (team2pkmon.spdef * 0.005));
+        console.log("Special dmg - " + damage);
+    }
+    damage = Math.round(damage);
+    console.log(damage);
+    team2pkmon.hp -= damage;
+    if(team2pkmon.hp <= 0)
+    {
+        team2pkmon.hp = 0;
+    }
+    updatehpbar();
+}
+
+function updatehpbar()
+{
+    t1hpbar.innerHTML = pakimani[0].hp + "/" + pakimani[0].hp;
+    t2hpbar.innerHTML = pakimani[1].hp + "/" + pakimani[1].hp;
 }
 
 function gotomoves()
@@ -155,8 +198,9 @@ function gotomoves()
     }
     bt1.onmouseover = function() 
     {
-        hover(bt1,'move1');
+        movehover(bt1,'move1');
     }
+    updatepp('move1');
 
     bt2.innerHTML = ' ' + team1pkmon.move2.name;
     bt2.onclick = function()
@@ -179,9 +223,9 @@ function gotomoves()
     }
 
     bt4.innerHTML = ' ' + team1pkmon.move4.name;
-    bt3.onclick = function()
+    bt4.onclick = function()
     {
-        attack('move3');
+        attack('move4');
     }
     bt4.onmouseover = function() 
     {
