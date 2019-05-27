@@ -35,6 +35,7 @@ function pakiman(name,lvl,hp,att,sp,def,spatt,spdef,move1,move2,move3,move4,imgl
     this.name = name;
     this.lvl = lvl;
     this.hp = hp;
+    this.maxhp = hp;
     this.att = att;
     this.sp = sp;
     this.def = def;
@@ -166,15 +167,12 @@ function dealdamage(move)
     if(team1pkmon[move].issp == false)
     {
         damage = damage * ((1 + team1pkmon.att * 0.01) - (team2pkmon.def * 0.005));
-        console.log("Not special dmg -" + damage);
     }
     else
     {
-        damage = damage * ((1 + team1pkmon.spatt * 0.015) - (team2pkmon.spdef * 0.005));
-        console.log("Special dmg - " + damage);
+        damage = damage * ((1 + team1pkmon.spatt * 0.0125) - (team2pkmon.spdef * 0.005));
     }
     damage = Math.round(damage);
-    console.log(damage);
     team2pkmon.hp -= damage;
     if(team2pkmon.hp <= 0)
     {
@@ -187,6 +185,16 @@ function updatehpbar()
 {
     t1hpbar.innerHTML = pakimani[0].hp + "/" + pakimani[0].hp;
     t2hpbar.innerHTML = pakimani[1].hp + "/" + pakimani[1].hp;
+    t2hpbar.style.width = ((325 * Math.round(pakimani[1].hp * (100 / pakimani[1].maxhp))) / 100);
+    if(t2hpbar.style.width < '162.5px')
+    {
+        t2hpbar.style.backgroundColor = 'yellow';
+    }
+    else if(t2hpbar.style.width < '65px')
+    {
+        t2hpbar.style.backgroundColor = 'red';
+    }
+    t2hpbar.style.borderRadius = '10px 0px 0px 10px';
 }
 
 function gotomoves()
