@@ -75,9 +75,10 @@ var mHBM2 = new move('HBM2',40,3,'electric',true,1000,2);
 
 var RTX2080Ti = new pakiman('RTX2080Ti',68,272,68,70,50,80,50,mRTX,mOC,mNVENC,mDRIVERUPDATE,'pakimans/epic.png');
 var RadeonVII = new pakiman('RadeonVII',50,331,40,50,69,60,65,mHeatwave,mLN2,mOC,mHBM2,'pakimans/epic2.png');
-//#endregion
 
 var pakimani = [RTX2080Ti,RadeonVII];
+//#endregion
+
 
 // #region HoverFunctions
 function hover(bt)
@@ -110,7 +111,7 @@ function unhover(bt)
 // #endregion
 
 
-// #region Init team1char & team2character (TODO - REMOVE T2IMG SRC)
+// #region Init team1char & team2character
 t1pkmn();
 function t1pkmn()
 {
@@ -130,6 +131,8 @@ function t1pkmn()
 }
 // #endregion
 
+// #region Player Attack
+
 function attack(move) /* TODO - FINISH COOLDOWNS*/
 {
     console.log("Current cooldown: " + team1pkmon[move].currentcooldown);
@@ -143,11 +146,14 @@ function attack(move) /* TODO - FINISH COOLDOWNS*/
         }
         else
         {
+            cooldowns();
             dealdamage(move);
-            team1pkmon[move].currentcooldown = team1pkmon[move].cooldown + 1;
+            if(team1pkmon[move].cooldown > 0)
+            {
+                team1pkmon[move].currentcooldown = team1pkmon[move].cooldown + 1;
+            }
             team1pkmon[move].rempp--;
         }
-        team1pkmon[move].currentcooldown--;
     }
     else if(team1pkmon[move].rempp == 0)
     {
@@ -160,6 +166,26 @@ function attack(move) /* TODO - FINISH COOLDOWNS*/
 
     updatepp(move);
 }
+
+// #region Player Cooldown Check
+
+function cooldowns()
+{
+    cooldowncheck('move1');
+    cooldowncheck('move2');
+    cooldowncheck('move3');
+    cooldowncheck('move4');
+}
+
+function cooldowncheck(move)
+{
+    if(team1pkmon[move].currentcooldown > 0)
+    {
+        team1pkmon[move].currentcooldown--;
+    }
+}
+
+// #endregion
 
 function dealdamage(move)
 {
@@ -181,22 +207,29 @@ function dealdamage(move)
     updatehpbar();
 }
 
+// #endregion
+
+
+// #region Update Enemy HP
 function updatehpbar()
 {
-    t1hpbar.innerHTML = pakimani[0].hp + "/" + pakimani[0].hp;
-    t2hpbar.innerHTML = pakimani[1].hp + "/" + pakimani[1].hp;
-    t2hpbar.style.width = ((325 * Math.round(pakimani[1].hp * (100 / pakimani[1].maxhp))) / 100);
-    if(t2hpbar.style.width < '162.5px')
+    t1hpbar.innerHTML = team1pkmon.hp + "/" + team1pkmon.hp;
+    t2hpbar.innerHTML = team2pkmon.hp + "/" + team2pkmon.hp;
+    t2hpbar.style.width = ((325 * Math.round(team2pkmon.hp * (100 / team2pkmon.maxhp))) / 100);
+    if(t2hpbar.offsetWidth < 162.5 && t2hpbar.offsetWidth > 65)
     {
         t2hpbar.style.backgroundColor = 'yellow';
     }
-    else if(t2hpbar.style.width < '65px')
+    else if(t2hpbar.offsetWidth <= 65)
     {
         t2hpbar.style.backgroundColor = 'red';
     }
     t2hpbar.style.borderRadius = '10px 0px 0px 10px';
 }
+// #endregion
 
+
+// #region AttackButton move change
 function gotomoves()
 {
     bt1.innerHTML = ' ' + team1pkmon.move1.name;
@@ -240,3 +273,4 @@ function gotomoves()
         movehover(bt4,'move4');
     }
 }
+// #endregion

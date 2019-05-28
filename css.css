@@ -1,5 +1,6 @@
 @import 'Style.css';
 
+/*#region MainWidthHeight*/
 #container
 {
     width: 100%;
@@ -24,6 +25,7 @@
     width: 50%;
     height: 100%;
 }
+/*#endregion*/
 
 #infocont
 {
