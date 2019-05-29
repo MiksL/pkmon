@@ -23,6 +23,8 @@ var wsbtname;
 var charsel;
 var imglt1;
 var attackcomplete;
+var selectmove;
+var turn = 1;
 
 
 var team1pkmon = "";
@@ -64,17 +66,17 @@ function move(name,dmg,pp,type,issp,sp,cooldown)
 // #endregion
 
 // #region Objects
-var mRTX = new move('RAY TRACING',100,5,'RTX',true,30,2);
-var mOC = new move('OC',40,10,'normal',false,50,0);
-var mNVENC = new move('NVENC',20,25,'normal',false,200,1);
-var mDRIVERUPDATE = new move('DRIVER UPDATE',50,10,'fire',false,90,0);
+const mRTX = new move('RAY TRACING',100,5,'RTX',true,30,2);
+const mOC = new move('OC',40,10,'normal',false,50,0);
+const mNVENC = new move('NVENC',20,25,'normal',false,200,1);
+const mDRIVERUPDATE = new move('DRIVER UPDATE',50,10,'fire',false,90,0);
 
-var mHeatwave = new move('HEATWAVE',40,10,'fire',false,40,0);
-var mLN2 = new move('LN2',60,5,'air',true,120,1);
-var mHBM2 = new move('HBM2',40,3,'electric',true,1000,2);
+const mHeatwave = new move('HEATWAVE',40,10,'fire',false,40,0);
+const mLN2 = new move('LN2',60,5,'air',true,120,1);
+const mHBM2 = new move('HBM2',40,3,'electric',true,1000,2);
 
-var RTX2080Ti = new pakiman('RTX2080Ti',68,272,68,70,50,80,50,mRTX,mOC,mNVENC,mDRIVERUPDATE,'pakimans/epic.png');
-var RadeonVII = new pakiman('RadeonVII',50,331,40,50,69,60,65,mHeatwave,mLN2,mOC,mHBM2,'pakimans/epic2.png');
+const RTX2080Ti = new pakiman('RTX2080Ti',68,272,68,70,50,80,50,mRTX,mOC,mNVENC,mDRIVERUPDATE,'pakimans/epic.png');
+const RadeonVII = new pakiman('RadeonVII',50,331,40,50,69,60,65,mHeatwave,mLN2,mOC,mHBM2,'pakimans/epic2.png');
 
 var pakimani = [RTX2080Ti,RadeonVII];
 //#endregion
@@ -133,9 +135,32 @@ function t1pkmn()
 
 // #region Player Attack
 
-function attack(move) /* TODO - FINISH COOLDOWNS*/
+function attack(move)
 {
-    console.log("Current cooldown: " + team1pkmon[move].currentcooldown);
+    AIattack();
+    console.log(selectmove);
+    var t2speed = Math.round(team2pkmon[selectmove].sp * (1 + team2pkmon.sp * 0.01));
+    var t1speed = Math.round(team1pkmon[move].sp * (1 + team1pkmon.sp * 0.01));
+    console.log(t1speed);
+    console.log(t2speed);
+    if(t1speed > t2speed)
+    {
+        playerattack(move);
+
+        AIattack();
+    }
+    else
+    {
+        AIattack();
+
+        playerattack(move);
+    }
+
+    turn++;
+}
+
+function playerattack(move)
+{
     if(team1pkmon[move].rempp > 0)
     {
 
@@ -209,16 +234,94 @@ function dealdamage(move)
 
 // #endregion
 
+// #region AI Attack
+
+function AIattack()
+{
+    for(var check = 1; check < 5; check++)
+    {
+        move = 'move' + check;
+        var aidamage = team2pkmon[move].dmg;
+        if(team2pkmon[move].issp == false)
+        {
+            aidamage = aidamage * ((1 + team2pkmon.att * 0.01) - (team1pkmon.def * 0.005));
+        }
+        else
+        {
+            aidamage = aidamage * ((1 + team2pkmon.spatt * 0.0125) - (team1pkmon.spdef * 0.005));
+        }
+        aidamage = Math.round(aidamage);
+
+        AICooldowns();
+
+        if(team1pkmon.hp - aidamage <= 0 && team2pkmon[move].pp > 0)
+        {
+            selectmove = team2pkmon[move];
+        }
+        else
+        {
+        }
+    }
+
+    team1pkmon.hp -= aidamage;
+    if(team1pkmon.hp <= 0)
+    {
+        team1pkmon.hp = 0;
+    }
+
+
+}
+
+function AICooldowns()
+{
+    AIcooldowncheck('move1');
+    AIcooldowncheck('move2');
+    AIcooldowncheck('move3');
+    AIcooldowncheck('move4');
+}
+
+function AIcooldowncheck(move)
+{
+    if(team2pkmon[move].currentcooldown > 0)
+    {
+        team2pkmon[move].currentcooldown--;
+    }
+    else if(team2pkmon[move].cooldown == 0)
+    {
+    }
+    else if(team2pkmon[move].currentcooldown == 0 && team2pkmon[move].cooldown > 0)
+    {
+        team2pkmon[move].currentcooldown = team2pkmon[move].cooldown + 1;
+    }
+    else if(turn = 1 && team2pkmon[move].currentcooldown > 0)
+    {
+        team2pkmon[move].currentcooldown = 0;
+    }
+
+}
+
+// #endregion
 
 // #region Update Enemy HP
 function updatehpbar()
 {
-    t1hpbar.innerHTML = team1pkmon.hp + "/" + team1pkmon.hp;
-    t2hpbar.innerHTML = team2pkmon.hp + "/" + team2pkmon.hp;
+    t1hpbar.innerHTML = team1pkmon.hp + "/" + team1pkmon.maxhp;
+    t1hpbar.style.width = ((325 * Math.round(team1pkmon.hp * (100 / team1pkmon.maxhp))) / 100);
+    if(t1hpbar.offsetWidth < 162.5 && t1hpbar.offsetWidth > 65)
+    {
+        t1hpbar.style.backgroundColor = '#E4EA33';
+    }
+    else if(t1hpbar.offsetWidth <= 65)
+    {
+        t1hpbar.style.backgroundColor = 'red';
+    }
+    t1hpbar.style.borderRadius = '10px 0px 0px 10px';
+
+    t2hpbar.innerHTML = team2pkmon.hp + "/" + team2pkmon.maxhp;
     t2hpbar.style.width = ((325 * Math.round(team2pkmon.hp * (100 / team2pkmon.maxhp))) / 100);
     if(t2hpbar.offsetWidth < 162.5 && t2hpbar.offsetWidth > 65)
     {
-        t2hpbar.style.backgroundColor = 'yellow';
+        t2hpbar.style.backgroundColor = '#E4EA33';
     }
     else if(t2hpbar.offsetWidth <= 65)
     {
